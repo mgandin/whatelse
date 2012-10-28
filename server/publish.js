@@ -25,7 +25,8 @@ Meteor.publish('selections', function(list_id) {
 Meteor.publish("allUserData", function() {
 	return Meteor.users.find({}, {
 		fields : {
-			'username' : 1
+			'username' : 1,
+			'emails' : 1,
 		}
 	});
 });

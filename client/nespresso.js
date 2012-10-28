@@ -252,7 +252,7 @@ Template.line_item.selections = function() {
 
 	var missingSelections = _.map(missingCoffees, function(coffee_id) { return {
 		list_id : list_id,
-		owner_id : user._id,
+		owner_id : owner_id,
 		coffee_id: coffee_id,
 		quantity: 0,
 	}});
@@ -303,6 +303,10 @@ Template.line_item.adding_tag = function() {
 
 Template.line_item.events({
 });
+
+Template.table_cell.owner = function() {
+	return this.owner_id == Meteor.user()._id;
+};
 
 Template.table_cell.events({
 	'click .more' : function() {

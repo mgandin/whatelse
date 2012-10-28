@@ -81,7 +81,15 @@
 </template>
 
 <template name="table_cell">
-  <div class="quantity"><span class="amount">{{quantity}}</span><div class="more"/><div class="less"/></div>
+  <div class="quantity">
+  	<span class="amount">{{quantity}}</span>
+
+    {{#if owner}}
+      <div class="more"/>
+      <div class="less"/>
+    {{/if}}
+
+  </div>
 </template>
 
 <template name="coffees">
