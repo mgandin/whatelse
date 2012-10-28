@@ -5,14 +5,6 @@ Meteor.startup(function() {
 		});
 	};
 
-	Lines.allow({
-		insert : function() {
-			return true;
-		},
-		update : canModify,
-		remove : canModify,
-	});
-
 	Selections.allow({
 		insert : function() {
 			return true;

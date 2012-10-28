@@ -3,7 +3,6 @@
 // Define Minimongo collections to match server/publish.js.
 Coffees = new Meteor.Collection("coffees");
 Lists = new Meteor.Collection("lists");
-Lines = new Meteor.Collection("lines");
 Selections = new Meteor.Collection("selections");
 
 // ID of currently selected list

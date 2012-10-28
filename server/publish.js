@@ -22,20 +22,6 @@ Meteor.publish('selections', function(list_id) {
 	});
 });
 
-// Todos -- {text: String,
-// done: Boolean,
-// tags: [String, ...],
-// list_id: String,
-// timestamp: Number}
-Lines = new Meteor.Collection("lines");
-
-// Publish visible items for requested list_id.
-Meteor.publish('lines', function(list_id) {
-	return Lines.find({
-		list_id : list_id
-	});
-});
-
 Meteor.publish("allUserData", function() {
 	return Meteor.users.find({}, {
 		fields : {
