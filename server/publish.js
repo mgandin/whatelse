@@ -13,6 +13,13 @@ Meteor.publish('coffees', function() {
 	return Coffees.find();
 });
 
+// Selections
+Selections = new Meteor.Collection("selections");
+
+Meteor.publish('selections', function() {
+	return Selections.find();
+});
+
 // Todos -- {text: String,
 // done: Boolean,
 // tags: [String, ...],
@@ -24,5 +31,13 @@ Lines = new Meteor.Collection("lines");
 Meteor.publish('lines', function(list_id) {
 	return Lines.find({
 		list_id : list_id
+	});
+});
+
+Meteor.publish("allUserData", function() {
+	return Meteor.users.find({}, {
+		fields : {
+			'username' : 1
+		}
 	});
 });

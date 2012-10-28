@@ -276,6 +276,27 @@ h3 {
     margin-left: 35px;
 }
 
+.more {
+    background: url('/more.png') no-repeat 0 0;
+}
+
+.less {
+    background: url('/less.png') no-repeat 0 0;
+}
+
+.more, .less {
+    cursor: pointer;
+    left: 5px;
+    top: 15px;
+    height: 20px;
+    width: 20px;
+    display:inline-block;
+}
+
+//.more:hover {
+//    background-position: 0 -20px;
+//}
+
 #edittag-input {
     width: 80px;
 }

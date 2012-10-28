@@ -4,6 +4,7 @@
 Coffees = new Meteor.Collection("coffees");
 Lists = new Meteor.Collection("lists");
 Lines = new Meteor.Collection("lines");
+Selections = new Meteor.Collection("selections");
 
 // ID of currently selected list
 Session.set('list_id', null);
@@ -174,21 +175,100 @@ Template.lines.lines = function() {
 	// selected based on list_id and tag_filter.
 
 	var list_id = Session.get('list_id');
-	if (!list_id)
+	if (!list_id) {
 		return {};
+	}
 
 	var sel = {
 		list_id : list_id
 	};
-	var tag_filter = Session.get('tag_filter');
-	if (tag_filter)
-		sel.tags = tag_filter;
 
-	return Lines.find(sel, {
+	var lines = Lines.find(sel, {
 		sort : {
-			timestamp : 1
+			owner : 1
+		}
+	}).fetch();
+
+	var user = Meteor.user();
+	if (user && user._id) {
+		var existingSel = {
+			list_id : list_id,
+			owner_id : user._id
+		};
+		var existing = Lines.findOne(existingSel);
+		console.log(existing);
+		if (!existing) {
+			lines = _.union(lines, existingSel);
+		}
+	}
+
+	return lines;
+};
+
+Template.lines.coffees = function() {
+	return Coffees.find({}, {
+		sort : {
+			id : 1
 		}
 	});
+};
+
+Template.line_item.selections = function() {
+
+	var selections = {};
+	var availableCoffees = _.pluck(Coffees.find({}, {
+		sort : {
+			id : 1
+		}
+	}).fetch(), "_id");
+	console.log("Available coffees " + availableCoffees);
+
+	var user = Meteor.user();
+	var list_id = this.list_id;
+	if (user && user._id) {
+		var existingSel = {
+			list_id : list_id,
+			owner_id : user._id
+		};
+		selections = Selections.find(existingSel, {
+			sort : {
+				coffee_id : 1
+			}
+		}).fetch() || {};
+
+	}
+	console.log("Selections " + selections);
+
+	var selectedCoffees = _.pluck(selections, "coffee_id");
+	console.log("Selected coffees " + selectedCoffees);
+
+	var missingCoffees = _.difference(availableCoffees, selectedCoffees);
+	console.log("Missing coffees " + missingCoffees);
+	
+
+	var missingSelections = _.map(missingCoffees, function(coffee_id) { return {
+		list_id : list_id,
+		owner_id : user._id,
+		coffee_id: coffee_id,
+		quantity: 0,
+	}});
+	console.log("Missing selections " + missingSelections);
+	
+	selections = _.union(selections, missingSelections);
+	console.log("Completed selections " + selections);
+
+	return selections;
+};
+
+Template.line_item.owner = function() {
+	var user = Meteor.users.findOne({
+		_id : this.owner_id
+	});
+	var label = this.owner_id;
+	if (user && user.emails) {
+		label = user.emails[0].address;
+	}
+	return label;
 };
 
 Template.line_item.tag_objs = function() {
@@ -302,7 +382,7 @@ Template.line_item.events(okCancelEvents('#edittag-input', {
 	}
 }));
 
-///////// Coffees //////////
+// /////// Coffees //////////
 
 // Pick out the unique tags from all todos in current list.
 Template.coffees.coffees = function() {
@@ -313,8 +393,7 @@ Template.coffees.coffees = function() {
 	});
 };
 
-Template.coffees.events({
-});
+Template.coffees.events({});
 
 // //////// Tracking selected list in URL //////////
 
