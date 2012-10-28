@@ -382,6 +382,27 @@ Template.line_item.events(okCancelEvents('#edittag-input', {
 	}
 }));
 
+Template.table_cell.events({
+	'click .more' : function() {
+		var selection = this;
+		console.log('More');
+		console.log(selection);
+		if(selection._id) {
+			console.log("Updating selection");
+			Selections.update(selection._id, {$inc: {quantity: 1}});
+		} else {
+			selection.quantity = 1;
+			var selectionId = Selections.insert(selection);
+			console.log("Inserted selection " + selectionId);
+		}
+	},
+	'click .less' : function() {
+		var selection = this;
+		console.log('Less');
+		console.log(selection);
+	},
+});
+
 // /////// Coffees //////////
 
 // Pick out the unique tags from all todos in current list.

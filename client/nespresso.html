@@ -73,11 +73,15 @@
 
   {{#each selections}}
     <td>
-      <div class="quantity"><span class="amount">{{quantity}}</span><div class="more"/><div class="less"/></div>
+      {{> table_cell}}
     </td>
   {{/each}}
 
   </tr>
+</template>
+
+<template name="table_cell">
+  <div class="quantity"><span class="amount">{{quantity}}</span><div class="more"/><div class="less"/></div>
 </template>
 
 <template name="coffees">
