@@ -16,8 +16,10 @@ Meteor.publish('coffees', function() {
 // Selections
 Selections = new Meteor.Collection("selections");
 
-Meteor.publish('selections', function() {
-	return Selections.find();
+Meteor.publish('selections', function(list_id) {
+	return Selections.find({
+		list_id : list_id
+	});
 });
 
 // Todos -- {text: String,

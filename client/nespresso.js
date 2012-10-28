@@ -24,7 +24,7 @@ Meteor.subscribe('lists', function() {
 	if (!Session.get('list_id')) {
 		var list = Lists.findOne({}, {
 			sort : {
-				name : 1
+				timestamp : 1
 			}
 		});
 		if (list)
@@ -45,8 +45,10 @@ Meteor.subscribe('coffees', function() {
 // Always be subscribed to the todos for the selected list.
 Meteor.autosubscribe(function() {
 	var list_id = Session.get('list_id');
-	if (list_id)
+	if (list_id) {
 		Meteor.subscribe('lines', list_id);
+		Meteor.subscribe('selections', list_id);
+	}
 });
 
 // //////// Helpers for in-place editing //////////
@@ -90,7 +92,7 @@ var activateInput = function(input) {
 Template.lists.lists = function() {
 	return Lists.find({}, {
 		sort : {
-			name : 1
+			timestamp : 1
 		}
 	});
 };
@@ -117,7 +119,8 @@ Template.lists.events({
 Template.lists.events(okCancelEvents('#new-list', {
 	ok : function(text, evt) {
 		var id = Lists.insert({
-			name : text
+			name : text,
+			timestamp: (new Date()).getTime(),
 		});
 		Router.setList(id);
 		evt.target.value = "";
@@ -183,25 +186,25 @@ Template.lines.lines = function() {
 		list_id : list_id
 	};
 
-	var lines = Lines.find(sel, {
+	var selections = Selections.find(sel, {
 		sort : {
-			owner : 1
-		}
+			owner_id : 1
+		},
+		fields : {owner_id: 1}
 	}).fetch();
+	var ownerIds = _.uniq(_.pluck(selections, "owner_id"));
 
 	var user = Meteor.user();
-	if (user && user._id) {
-		var existingSel = {
-			list_id : list_id,
-			owner_id : user._id
-		};
-		var existing = Lines.findOne(existingSel);
-		console.log(existing);
-		if (!existing) {
-			lines = _.union(lines, existingSel);
-		}
+	if (user && user._id && !_.contains(ownerIds, user._id)) {
+		ownerIds = _.union(ownerIds, [user._id]);
 	}
 
+	var lines = _.map(ownerIds, function(uid) {
+		return {
+			owner_id: uid,
+			list_id: list_id,
+		};
+	});
 	return lines;
 };
 
@@ -215,6 +218,7 @@ Template.lines.coffees = function() {
 
 Template.line_item.selections = function() {
 
+	var line = this;
 	var selections = {};
 	var availableCoffees = _.pluck(Coffees.find({}, {
 		sort : {
@@ -224,11 +228,12 @@ Template.line_item.selections = function() {
 	console.log("Available coffees " + availableCoffees);
 
 	var user = Meteor.user();
-	var list_id = this.list_id;
+	var list_id = line.list_id;
+	var owner_id = line.owner_id;
 	if (user && user._id) {
 		var existingSel = {
 			list_id : list_id,
-			owner_id : user._id
+			owner_id : owner_id
 		};
 		selections = Selections.find(existingSel, {
 			sort : {
@@ -298,89 +303,7 @@ Template.line_item.adding_tag = function() {
 };
 
 Template.line_item.events({
-	'click .check' : function() {
-		Lines.update(this._id, {
-			$set : {
-				done : !this.done
-			}
-		});
-	},
-
-	'click .destroy' : function() {
-		Lines.remove(this._id);
-	},
-
-	'click .addtag' : function(evt, tmpl) {
-		Session.set('editing_addtag', this._id);
-		Meteor.flush(); // update DOM before focus
-		activateInput(tmpl.find("#edittag-input"));
-	},
-
-	'dblclick .display .line-text' : function(evt, tmpl) {
-		Session.set('editing_itemname', this._id);
-		Meteor.flush(); // update DOM before focus
-		activateInput(tmpl.find("#line-input"));
-	},
-
-	'click .remove' : function(evt) {
-		var tag = this.tag;
-		var id = this.line_id;
-
-		evt.target.parentNode.style.opacity = 0;
-		// wait for CSS animation to finish
-		Meteor.setTimeout(function() {
-			Lines.update(id, {
-				$pull : {
-					tags : tag
-				}
-			});
-		}, 300);
-	},
-
-	'click .make-public' : function() {
-		Lines.update(this._id, {
-			$set : {
-				privateTo : null
-			}
-		});
-	},
-
-	'click .make-private' : function() {
-		Lines.update(this._id, {
-			$set : {
-				privateTo : Meteor.user()._id
-			}
-		});
-	}
 });
-
-Template.line_item.events(okCancelEvents('#line-input', {
-	ok : function(value) {
-		Lines.update(this._id, {
-			$set : {
-				text : value
-			}
-		});
-		Session.set('editing_itemname', null);
-	},
-	cancel : function() {
-		Session.set('editing_itemname', null);
-	}
-}));
-
-Template.line_item.events(okCancelEvents('#edittag-input', {
-	ok : function(value) {
-		Lines.update(this._id, {
-			$addToSet : {
-				tags : value
-			}
-		});
-		Session.set('editing_addtag', null);
-	},
-	cancel : function() {
-		Session.set('editing_addtag', null);
-	}
-}));
 
 Template.table_cell.events({
 	'click .more' : function() {
@@ -400,6 +323,10 @@ Template.table_cell.events({
 		var selection = this;
 		console.log('Less');
 		console.log(selection);
+		if(selection._id) {
+			console.log("Updating selection");
+			Selections.update(selection._id, {$inc: {quantity: -1}});
+		}
 	},
 });
 
