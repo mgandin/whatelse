@@ -1,13 +1,13 @@
 <head>
-  <title>Lines</title>
+  <title>What else ?</title>
 </head>
 
 <body>
-  <div id="top-tag-filter">
+  <div id="top-coffees">
     <div class="login-bar">
       {{> loginButtons}}
     </div>
-    {{> tag_filter}}
+    {{> coffees}}
   </div>
 
   <div id="main-pane">
@@ -20,7 +20,7 @@
 </body>
 
 <template name="lists">
-  <h3>Nespresso Lists</h3>
+  <h3>What else ?</h3>
   <div id="lists">
     {{#each lists}}
       <div class="list {{selected}}">
@@ -107,12 +107,12 @@
   </li>
 </template>
 
-<template name="tag_filter">
-  <div id="tag-filter" class="tag-list">
-    <div class="label">Show:</div>
-    {{#each tags}}
-      <div class="tag {{selected}}">
-        {{tag_text}} <span class="count">({{count}})</span>
+<template name="coffees">
+  <div id="coffees">
+    <div class="label">Coffees:</div>
+    {{#each coffees}}
+      <div class="coffee {{selected}}">
+        {{name}}
       </div>
     {{/each}}
   </div>

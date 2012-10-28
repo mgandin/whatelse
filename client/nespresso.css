@@ -38,7 +38,7 @@ h3 {
     text-align: center;
 }
 
-#top-tag-filter, #main-pane, #side-pane, #bottom-pane {
+#top-coffees, #main-pane, #side-pane, #bottom-pane {
     position: absolute;
     left: 0;
     right: 0;
@@ -46,11 +46,11 @@ h3 {
     bottom: 0;
 }
 
-#tag-filter, #main-pane, #side-pane, #bottom-pane {
+#coffees, #main-pane, #side-pane, #bottom-pane {
     overflow: hidden;
 }
 
-#top-tag-filter {
+#top-coffees {
     left: 200px;
     height: 44px;
     bottom: auto;
@@ -58,8 +58,8 @@ h3 {
     border-bottom: 1px solid #999;
 }
 
-#tag-filter {
-    height: 44px; /* same as in #top-tag-filter */
+#coffees {
+    height: 44px; /* same as in #top-coffees */
 }
 
 #help {
@@ -82,7 +82,7 @@ h3 {
     background: #ddd;
 }
 
-.tag {
+.coffee {
     cursor: pointer;
     float: left;
     margin: 5px;
@@ -105,37 +105,25 @@ h3 {
     position: relative;
 }
 
-#tag-filter .label {
+#coffees .label {
     float: left;
     margin-top: 9px;
     margin-left: 12px;
     margin-right: 8px;
 }
 
-#tag-filter .tag {
+#coffees .coffee {
     margin-top: 10px;
     border: 1px solid #777;
 }
 
-#tag-filter .selected {
+#coffees .selected {
     background: #69d;
 }
 
-#tag-filter .count {
+#coffees .count {
     font-weight: normal;
     padding-left: 2px;
-}
-
-#lists .list .destroy {
-    cursor: pointer;
-    left: 5px;
-    top: 15px;
-    height: 20px;
-    width: 20px;
-}
-
-#lists .list .destroy:hover {
-    background-position: 0 -20px;
 }
 
 #lists .list {
@@ -152,6 +140,18 @@ h3 {
     cursor: pointer;
     color: black;
     text-decoration: none;
+}
+
+#lists .list .destroy {
+    cursor: pointer;
+    left: 5px;
+    top: 15px;
+    height: 20px;
+    width: 20px;
+}
+
+#lists .list .destroy:hover {
+    background-position: 0 -20px;
 }
 
 #createList {
