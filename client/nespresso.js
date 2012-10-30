@@ -309,7 +309,7 @@ Template.table_cell.owner = function() {
 };
 
 Template.table_cell.events({
-	'click .more' : function() {
+	'click .more-active' : function() {
 		var selection = this;
 		console.log('More');
 		console.log(selection);
@@ -322,7 +322,7 @@ Template.table_cell.events({
 			console.log("Inserted selection " + selectionId);
 		}
 	},
-	'click .less' : function() {
+	'click .less-active' : function() {
 		var selection = this;
 		console.log('Less');
 		console.log(selection);

@@ -48,18 +48,22 @@
   {{#if any_list_selected}}
   <div id="items-view">
     <table id="lines-table">
+      <thead>
       <tr>
-    	<td>&nbsp;</td>
+    	<td class="left top-left">&nbsp;</td>
 	  {{#each coffees}}
 	    <td>
 	      <div class="name">{{name}}</div>
 	    </td>
 	  {{/each}}
 	  </tr>
+	  </thead>
 
+      <tbody>
       {{#each lines}}
         {{> line_item}}
       {{/each}}
+      </tbody>
     </table>
   </div>
   {{/if}}
@@ -67,7 +71,7 @@
 
 <template name="line_item">
   <tr class="line">
-  	<td>
+  	<td class="left">
       <div class="owner">{{owner}}</div>
   	</td>
 
@@ -82,13 +86,11 @@
 
 <template name="table_cell">
   <div class="quantity">
-  	<span class="amount">{{quantity}}</span>
-
-    {{#if owner}}
-      <div class="more"/>
-      <div class="less"/>
-    {{/if}}
-
+  	<div class="amount"><span>{{quantity}}</span></div>
+  	<div class="more-less">
+      <div class="more {{#if owner}}more-active{{/if}}">+</div>
+      <div class="less {{#if owner}}less-active{{/if}}">-</div>
+    </div>
   </div>
 </template>
 
