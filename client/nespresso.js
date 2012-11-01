@@ -375,7 +375,6 @@ Template.line_item.total = function() {
 		var participantCount = _.size(participantsIds());
 		if(participantCount > 0) {
 			var shippingFeesPerParticipant = shippingFees.divide(new BigDecimal("" + participantCount), 2, BigDecimal.prototype.ROUND_HALF_EVEN);
-//			console.log(participantCount + " participants, fees / part = " + shippingFeesPerParticipant + " total = " + total);
 			total = total.add(shippingFeesPerParticipant);
 		}
 	}

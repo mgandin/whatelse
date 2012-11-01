@@ -315,7 +315,7 @@ h3 {
 	text-align: center;
 }
 
-#lines-table td.left {
+#lines-table td.left, #lines-table td.right {
 	padding-left: 20px;
 }
 
