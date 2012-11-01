@@ -176,6 +176,28 @@ Template.lines.events(okCancelEvents('#new-line', {
 	}
 }));
 
+var participantsIds = function() {
+
+	var list_id = Session.get('list_id');
+	if (!list_id) {
+		return {};
+	}
+
+	var sel = {
+		list_id : list_id
+	};
+
+	var selections = Selections.find(sel, {
+		sort : {
+			owner_id : 1
+		},
+		fields : {owner_id: 1}
+	}).fetch();
+	var ownerIds = _.uniq(_.pluck(selections, "owner_id"));
+
+	return ownerIds;
+};
+
 Template.lines.lines = function() {
 	// Determine which lines to display in main pane,
 	// selected based on list_id and tag_filter.
@@ -347,6 +369,16 @@ Template.line_item.total = function() {
 	}
 
 	var total = totalPrice(selections, coffees);
+
+	var caps = totalCaps(selections);
+	if(caps < freeShippingFeesThreshold) {
+		var participantCount = _.size(participantsIds());
+		if(participantCount > 0) {
+			var shippingFeesPerParticipant = shippingFees.divide(new BigDecimal("" + participantCount), 2, BigDecimal.prototype.ROUND_HALF_EVEN);
+//			console.log(participantCount + " participants, fees / part = " + shippingFeesPerParticipant + " total = " + total);
+			total = total.add(shippingFeesPerParticipant);
+		}
+	}
 
 	return total;
 };
