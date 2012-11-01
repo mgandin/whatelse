@@ -215,6 +215,50 @@ Template.lines.coffees = function() {
 	});
 };
 
+var totalPrice = function(selections, coffeesById) {
+	return _.reduce(selections, function(total, s) { return total.add(new BigDecimal("" + s.quantity).multiply(new BigDecimal(coffeesById[s.coffee_id].price)))}, BigDecimal.prototype.ZERO);
+}
+
+var totalCaps = function(selections) {
+	return _.reduce(selections, function(total, s) { return total + s.quantity * 10}, 0);
+}
+
+Template.lines.total_caps = function() {
+
+	var selections = {};
+	var coffees = coffeesById();
+	var list_id = Session.get('list_id');
+
+	var sel = {
+		list_id : list_id,
+	};
+	selections = Selections.find(sel).fetch();
+
+	console.log("Selections " + selections);
+
+	var total = totalCaps(selections, coffees);
+
+	return total;
+};
+
+Template.lines.total_price = function() {
+
+	var selections = {};
+	var coffees = coffeesById();
+	var list_id = Session.get('list_id');
+
+	var sel = {
+		list_id : list_id,
+	};
+	selections = Selections.find(sel).fetch();
+
+	console.log("Selections " + selections);
+
+	var total = totalPrice(selections, coffees);
+
+	return total;
+};
+
 Template.line_item.selections = function() {
 
 	var line = this;
@@ -262,6 +306,38 @@ Template.line_item.selections = function() {
 	console.log("Completed selections " + selections);
 
 	return selections;
+};
+
+var coffeesById = function() {
+	return _.reduce(Coffees.find().fetch(), function(idmap, c) {idmap[c._id] = c; return idmap}, {});
+}
+
+Template.line_item.total = function() {
+
+	var line = this;
+	var selections = {};
+	var coffees = coffeesById();
+
+	var user = Meteor.user();
+	var list_id = line.list_id;
+	var owner_id = line.owner_id;
+	if (user && user._id) {
+		var existingSel = {
+			list_id : list_id,
+			owner_id : owner_id
+		};
+		selections = Selections.find(existingSel, {
+			sort : {
+				coffee_id : 1
+			}
+		}).fetch() || {};
+
+	}
+	console.log("Selections " + selections);
+
+	var total = _.reduce(selections, function(total, s) { return total.add(new BigDecimal("" + s.quantity).multiply(new BigDecimal(coffees[s.coffee_id].price)))}, BigDecimal.prototype.ZERO);
+
+	return total;
 };
 
 Template.line_item.owner = function() {

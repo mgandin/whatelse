@@ -54,8 +54,10 @@
 	  {{#each coffees}}
 	    <td>
 	      <div class="name">{{name}}</div>
+	      <div>{{price}} &euro;/cap</div>
 	    </td>
 	  {{/each}}
+    	<td class="right top-right">Total</td>
 	  </tr>
 	  </thead>
 
@@ -64,6 +66,22 @@
         {{> line_item}}
       {{/each}}
       </tbody>
+
+      <tfoot>
+      <tr>
+    	<td class="left bottom-left">
+    		<div>{{total_caps}} caps</div>
+    		<div>{{total_price}} &euro;</div>
+    	</td>
+	  {{#each coffees}}
+	    <td>
+	      <div>&nbsp;</div>
+	    </td>
+	  {{/each}}
+    	<td class="right bottom-right">&nbsp;</td>
+	  </tr>
+	  </tfoot>
+
     </table>
   </div>
   {{/if}}
@@ -81,6 +99,9 @@
     </td>
   {{/each}}
 
+  	<td class="right">
+      <div class="line-total">{{total}}</div>
+  	</td>
   </tr>
 </template>
 
