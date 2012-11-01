@@ -5,6 +5,10 @@ Coffees = new Meteor.Collection("coffees");
 Lists = new Meteor.Collection("lists");
 Selections = new Meteor.Collection("selections");
 
+// shipping fees
+var shippingFees = new BigDecimal("5");
+var freeShippingFeesThreshold = 200;
+
 // ID of currently selected list
 Session.set('list_id', null);
 
@@ -216,7 +220,8 @@ Template.lines.coffees = function() {
 };
 
 var totalPrice = function(selections, coffeesById) {
-	return _.reduce(selections, function(total, s) { return total.add(new BigDecimal("" + s.quantity).multiply(new BigDecimal(coffeesById[s.coffee_id].price)))}, BigDecimal.prototype.ZERO);
+	var ten = new BigDecimal("10");
+	return _.reduce(selections, function(total, s) { return total.add(new BigDecimal("" + s.quantity).multiply(new BigDecimal(coffeesById[s.coffee_id].price)).multiply(ten))}, BigDecimal.prototype.ZERO);
 }
 
 var totalCaps = function(selections) {
@@ -234,8 +239,6 @@ Template.lines.total_caps = function() {
 	};
 	selections = Selections.find(sel).fetch();
 
-	console.log("Selections " + selections);
-
 	var total = totalCaps(selections, coffees);
 
 	return total;
@@ -252,23 +255,38 @@ Template.lines.total_price = function() {
 	};
 	selections = Selections.find(sel).fetch();
 
-	console.log("Selections " + selections);
+	var caps = totalCaps(selections);
+	var price = totalPrice(selections, coffees);
+	if(caps < freeShippingFeesThreshold) {
+		price = price.add(shippingFees);
+	}
 
-	var total = totalPrice(selections, coffees);
+	return price;
+};
 
-	return total;
+Template.lines.shipping_fees = function() {
+	var selections = {};
+	var list_id = Session.get('list_id');
+
+	var sel = {
+		list_id : list_id,
+	};
+	selections = Selections.find(sel).fetch();
+	var fees = BigDecimal.prototype.ZERO;
+	var caps = totalCaps(selections);
+	if(caps < freeShippingFeesThreshold) {
+		fees = shippingFees;
+	}
+
+	return fees;
 };
 
 Template.line_item.selections = function() {
 
 	var line = this;
 	var selections = {};
-	var availableCoffees = _.pluck(Coffees.find({}, {
-		sort : {
-			id : 1
-		}
-	}).fetch(), "_id");
-	console.log("Available coffees " + availableCoffees);
+	var coffees = coffeesById();
+	var availableCoffees = _.keys(coffees);
 
 	var user = Meteor.user();
 	var list_id = line.list_id;
@@ -285,25 +303,19 @@ Template.line_item.selections = function() {
 		}).fetch() || {};
 
 	}
-	console.log("Selections " + selections);
 
 	var selectedCoffees = _.pluck(selections, "coffee_id");
-	console.log("Selected coffees " + selectedCoffees);
 
 	var missingCoffees = _.difference(availableCoffees, selectedCoffees);
-	console.log("Missing coffees " + missingCoffees);
 	
-
 	var missingSelections = _.map(missingCoffees, function(coffee_id) { return {
 		list_id : list_id,
 		owner_id : owner_id,
 		coffee_id: coffee_id,
 		quantity: 0,
 	}});
-	console.log("Missing selections " + missingSelections);
 	
-	selections = _.union(selections, missingSelections);
-	console.log("Completed selections " + selections);
+	selections = _.sortBy(_.union(selections, missingSelections), function(s) {return coffees[s.coffee_id].id});
 
 	return selections;
 };
@@ -333,9 +345,8 @@ Template.line_item.total = function() {
 		}).fetch() || {};
 
 	}
-	console.log("Selections " + selections);
 
-	var total = _.reduce(selections, function(total, s) { return total.add(new BigDecimal("" + s.quantity).multiply(new BigDecimal(coffees[s.coffee_id].price)))}, BigDecimal.prototype.ZERO);
+	var total = totalPrice(selections, coffees);
 
 	return total;
 };
@@ -382,6 +393,11 @@ Template.line_item.events({
 
 Template.table_cell.owner = function() {
 	return this.owner_id == Meteor.user()._id;
+};
+
+Template.table_cell.coffee = function() {
+	var coffee = Coffees.findOne({_id: this.coffee_id});
+	return coffee && coffee.id || "";
 };
 
 Template.table_cell.events({
