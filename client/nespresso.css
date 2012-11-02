@@ -186,7 +186,7 @@ h3 {
 
 #item-list .line {
     display: block;
-    height: 50px;
+    height: 40px;
     position: relative;
     overflow: hidden;
     border-top: 1px solid #ccc;
@@ -320,7 +320,7 @@ h3 {
 }
 
 #lines-table td {
-	width: 100px;
+	width: 80px;
 	background-color: #2D3033;
 	padding: 0px;
 }
@@ -330,11 +330,11 @@ h3 {
 }
 
 #lines-table tbody tr {
-	height: 100px;
+	height: 80px;
 }
 
 #lines-table td.left {
-	width: 400px;
+	width: 200px;
 }
 
 #lines-table td.top-left {
@@ -370,8 +370,8 @@ h3 {
 }
 
 .amount, .more-less {
-    height: 100px;
-    width: 50px;
+    height: 80px;
+    width: 40px;
     display:inline-block;
     float: left;
 }
@@ -389,8 +389,8 @@ h3 {
 }
 
 .more, .less {
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
     display:block;
     text-align: center;
     padding-top: 40;

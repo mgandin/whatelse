@@ -234,11 +234,7 @@ Template.lines.lines = function() {
 };
 
 Template.lines.coffees = function() {
-	return Coffees.find({}, {
-		sort : {
-			id : 1
-		}
-	});
+	return pricedCoffees();
 };
 
 var totalPrice = function(selections, coffeesById) {
@@ -342,8 +338,16 @@ Template.line_item.selections = function() {
 	return selections;
 };
 
+var pricedCoffees = function() {
+	return Coffees.find({price: {$type: 2}}, {
+		sort : {
+			id : 1
+		}
+	});
+}
+
 var coffeesById = function(coffees) {
-	coffees = coffees || Coffees.find().fetch();
+	coffees = coffees || pricedCoffees().fetch();
 	return _.reduce(coffees, function(idmap, c) {idmap[c.id] = c; return idmap}, {});
 }
 
@@ -461,11 +465,7 @@ Template.table_cell.events({
 
 // Pick out the unique tags from all todos in current list.
 Template.coffees.coffees = function() {
-	return Coffees.find({}, {
-		sort : {
-			name : 1
-		}
-	});
+	return pricedCoffees();
 };
 
 Template.coffees.events({});
@@ -492,7 +492,45 @@ Meteor.startup(function() {
 	});
 });
 
-var updateCoffees = function(coffeesHandler) {
+var updateCoffees = function() {
+	fetchAndDiffCoffees({
+		added: function(coffee) {
+			console.log("Added " + coffee.id + " " + coffee.name + " = " + coffee.price);
+			Coffees.insert(coffee);
+		},
+		removed: function(coffee) {
+			console.log("Removed " + coffee.id + " " + coffee.name + " = " + coffee.price);
+			Coffees.remove({id: coffee.id});
+		},
+		updated: function(oldCoffee, newCoffee) {
+			console.log("Updated " + oldCoffee.id + " " + oldCoffee.name + " = " + oldCoffee.price + " -> " + newCoffee.price);
+			Coffees.update({id: newCoffee.id}, newCoffee);
+		},
+		kept: function(coffee) {
+			console.log("Kept " + coffee.id + " " + coffee.name + " = " + coffee.price);
+		},
+		diff: function(diff) {
+		},
+	});
+}
+
+var fetchAndDiffCoffees = function(options) {
+	options = _.defaults(options || {}, {
+		added: function(coffee) {
+			console.log("Added " + coffee.id + " " + coffee.name + " = " + coffee.price);
+		},
+		removed: function(coffee) {
+			console.log("Removed " + coffee.id + " " + coffee.name + " = " + coffee.price);
+		},
+		updated: function(oldCoffee, newCoffee) {
+			console.log("Updated " + oldCoffee.id + " " + oldCoffee.name + " = " + oldCoffee.price + " -> " + newCoffee.price);
+		},
+		kept: function(coffee) {
+			console.log("Kept " + coffee.id + " " + coffee.name + " = " + coffee.price);
+		},
+		diff: function(diff) {
+		},
+	});
 	fetchCoffees(function(fetched) {
 		var stored = coffeesById();
 		var storedIds = _.keys(stored);
@@ -504,25 +542,25 @@ var updateCoffees = function(coffeesHandler) {
 		_.each(addedIds, function(id) {
 			var c = fetched[id];
 			coffeesDiff.added[id] = c;
-			console.log("Added " + c.id + " " + c.name + " = " + c.price);
+			options.added(c);
 		});
 		_.each(keptIds, function(id) {
 			var storedCoffee = stored[id];
 			var fetchedCoffee = fetched[id];
 			if(storedCoffee.price != fetchedCoffee.price) {
 				coffeesDiff.updated[id] = fetchedCoffee;
-				console.log("Updated " + storedCoffee.id + " " + storedCoffee.name + " = " + storedCoffee.price + " -> " + fetchedCoffee.price);
+				options.updated(storedCoffee, fetchedCoffee);
 			} else {
 				coffeesDiff.kept[id] = storedCoffee;
-				console.log("Kept " + storedCoffee.id + " " + storedCoffee.name + " = " + storedCoffee.price);
+				options.kept(storedCoffee);
 			}
 		});
 		_.each(removedIds, function(id) {
 			var c = stored[id];
 			coffeesDiff.removed[id] = c;
-			console.log("Removed " + c.id + " " + c.name + " = " + c.price);
+			options.removed(c);
 		});
-		console.log(coffeesDiff);
+		options.diff(coffeesDiff);
 	});
 }
 
