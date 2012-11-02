@@ -342,8 +342,9 @@ Template.line_item.selections = function() {
 	return selections;
 };
 
-var coffeesById = function() {
-	return _.reduce(Coffees.find().fetch(), function(idmap, c) {idmap[c._id] = c; return idmap}, {});
+var coffeesById = function(coffees) {
+	coffees = coffees || Coffees.find().fetch();
+	return _.reduce(coffees, function(idmap, c) {idmap[c.id] = c; return idmap}, {});
 }
 
 Template.line_item.total = function() {
@@ -427,7 +428,7 @@ Template.table_cell.owner = function() {
 };
 
 Template.table_cell.coffee = function() {
-	var coffee = Coffees.findOne({_id: this.coffee_id});
+	var coffee = Coffees.findOne({id: this.coffee_id});
 	return coffee && coffee.id || "";
 };
 
@@ -491,18 +492,58 @@ Meteor.startup(function() {
 	});
 });
 
-var updateCoffees = function() {
+var updateCoffees = function(coffeesHandler) {
+	fetchCoffees(function(fetched) {
+		var stored = coffeesById();
+		var storedIds = _.keys(stored);
+		var fetchedIds = _.pluck(fetched, "id");
+		var addedIds = _.difference(fetchedIds, storedIds);
+		var removedIds = _.difference(storedIds, fetchedIds);
+		var keptIds = _.intersection(storedIds, fetchedIds);
+		var coffeesDiff = {added: {}, removed: {}, updated: {}, kept: {}};
+		_.each(addedIds, function(id) {
+			var c = fetched[id];
+			coffeesDiff.added[id] = c;
+			console.log("Added " + c.id + " " + c.name + " = " + c.price);
+		});
+		_.each(keptIds, function(id) {
+			var storedCoffee = stored[id];
+			var fetchedCoffee = fetched[id];
+			if(storedCoffee.price != fetchedCoffee.price) {
+				coffeesDiff.updated[id] = fetchedCoffee;
+				console.log("Updated " + storedCoffee.id + " " + storedCoffee.name + " = " + storedCoffee.price + " -> " + fetchedCoffee.price);
+			} else {
+				coffeesDiff.kept[id] = storedCoffee;
+				console.log("Kept " + storedCoffee.id + " " + storedCoffee.name + " = " + storedCoffee.price);
+			}
+		});
+		_.each(removedIds, function(id) {
+			var c = stored[id];
+			coffeesDiff.removed[id] = c;
+			console.log("Removed " + c.id + " " + c.name + " = " + c.price);
+		});
+		console.log(coffeesDiff);
+	});
+}
+
+var fetchCoffees = function(coffeesHandler) {
 	Meteor.call('fetchNespressoIndex', function(error, result) {
 		if(result) {
 			var index = $.parseXML(result.content);
 			var items = document.evaluate("//listeCafe/item", index, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-			for (var i = 0; i < items.snapshotLength; i++) {
+			var coffees = {};
+			var count = items.snapshotLength;
+			for (var i = 0; i < count; i++) {
 			    var item = items.snapshotItem(i);
 			    var id = item.getAttribute('id');
 			    var name = item.getElementsByTagName('infoBulle')[0].textContent;
 			    var url = item.getElementsByTagName('url')[0].getAttribute('href');
 			    getCoffeePrice({id: id, name: name}, url, function(coffee) {
 			    	console.log(coffee.id + ", "  + coffee.name + " = " + coffee.price + " \u20AC");
+			    	coffees[coffee.id] = coffee;
+			    	if(_.size(coffees) == count) {
+			    		coffeesHandler(coffees);
+			    	}
 			    });
 			}
 		}
@@ -520,7 +561,7 @@ var getCoffeePrice = function(coffee, url, priceHandler) {
     		// \u20AC is euro unicode
     		var price = priceEl.data.match(/(?:.*\u20AC)\s*([0-9]\.[0-9]+)/)[1];
     		coffee.price = price;
-    		priceHandler(coffee);
     	}
+    	priceHandler(coffee);
     });
 }

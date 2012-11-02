@@ -1,23 +1,37 @@
 Meteor.startup(function() {
-	var canModify = function(userId, lines) {
+
+	var isOwner = function(userId, lines) {
 		return _.all(lines, function(line) {
 			return !line.owner_id || line.owner_id === userId;
 		});
 	};
 
+	var isSuperAdmin = function(userId, lines) {
+		return _.all(lines, function(line) {
+			return !line.owner_id || line.owner_id === "6965a5a3-0697-413b-839c-6699bed4fece";
+		});
+	};
+
+	var isAnyone = function() {
+		return true;
+	};
+	
 	Selections.allow({
-		insert : function() {
-			return true;
-		},
-		update : canModify,
-		remove : canModify,
+		insert : isAnyone,
+		update : isOwner,
+		remove : isOwner,
 	});
 
 	Lists.allow({
-		insert : function() {
-			return true;
-		},
-		update : canModify,
-		remove : canModify,
+		insert : isAnyone,
+		update : isOwner,
+		remove : isOwner,
 	});
+
+	Coffees.allow({
+		insert : isSuperAdmin,
+		update : isSuperAdmin,
+		remove : isSuperAdmin,
+	});
+
 });
