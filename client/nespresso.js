@@ -490,3 +490,37 @@ Meteor.startup(function() {
 		pushState : true
 	});
 });
+
+var updateCoffees = function() {
+	Meteor.call('fetchNespressoIndex', function(error, result) {
+		if(result) {
+			var index = $.parseXML(result.content);
+			var items = document.evaluate("//listeCafe/item", index, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+			for (var i = 0; i < items.snapshotLength; i++) {
+			    var item = items.snapshotItem(i);
+			    var id = item.getAttribute('id');
+			    var name = item.getElementsByTagName('infoBulle')[0].textContent;
+			    var url = item.getElementsByTagName('url')[0].getAttribute('href');
+			    getCoffeePrice({id: id, name: name}, url, function(coffee) {
+			    	console.log(coffee.id + ", "  + coffee.name + " = " + coffee.price + " \u20AC");
+			    });
+			}
+		}
+		if(error) {
+			console.log(error);
+		}
+	});
+}
+
+var getCoffeePrice = function(coffee, url, priceHandler) {
+    Meteor.call('fetchNespressoDoc', url, function(error, result) {
+    	var docXml = $.parseXML(result.content);
+    	var priceEl = document.evaluate("//complexePage/text[contains(text(), 'Prix')]/text()", docXml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE).snapshotItem(0);
+    	if(priceEl) {
+    		// \u20AC is euro unicode
+    		var price = priceEl.data.match(/(?:.*\u20AC)\s*([0-9]\.[0-9]+)/)[1];
+    		coffee.price = price;
+    		priceHandler(coffee);
+    	}
+    });
+}
