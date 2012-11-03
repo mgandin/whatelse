@@ -1,9 +1,32 @@
+Groups = new Meteor.Collection("groups");
+
+Meteor.publish('groups', function() {
+	var groupIds = _.pluck(Memberships.find({
+		user_id: this.userId()
+	}).fetch(), 'group_id')
+	return Groups.find({
+		id: {
+			$in: groupIds
+		}
+	});
+});
+
+Memberships = new Meteor.Collection("memberships");
+
+Meteor.publish('memberships', function() {
+	return Memberships.find({
+		user_id: this.userId()
+	});
+});
+
 // Lists -- {name: String}
 Lists = new Meteor.Collection("lists");
 
 // Publish complete set of lists to all clients.
-Meteor.publish('lists', function() {
-	return Lists.find();
+Meteor.publish('lists', function(group_id) {
+	return Lists.find({
+		group_id: group_id
+	});
 });
 
 // Coffees

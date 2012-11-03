@@ -1,53 +1,87 @@
 <head>
-  <title>What else ?</title>
+	<title>What else ?</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
 </head>
 
 <body>
-  <div id="top-coffees">
-    <div class="login-bar">
-      {{> loginButtons}}
-    </div>
-    {{> coffees}}
-  </div>
-
-  <div id="main-pane">
-    {{> lines}}
-  </div>
-
-  <div id="side-pane">
-    {{> lists}}
-  </div>
+    {{> body}}
 </body>
 
-<template name="lists">
-  <h3>What else ?</h3>
-  <div id="lists">
-    {{#each lists}}
-      <div class="list {{selected}}">
-        {{#if editing}}
-          <div class="edit">
-            <input class="list-name-input" id="list-name-input" type="text" value="{{name}}" />
-          </div>
-        {{else}}
-          <div class="display">
-            <a class="list-name {{name_class}}" href="/{{_id}}">
-              {{name}}
-            </a>
-          </div>
-          <div class="destroy"></div>
-        {{/if}}
+<template name="body">
+	<div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">What else ?</a>
+          <div class="nav-collapse collapse">
+			{{> groups}}
+          </div><!--/.nav-collapse -->
+          {{> loginButtons}}
+        </div>
       </div>
-    {{/each}}
-  </div>
+    </div>
+
+    <div class="container">
+
+      <h1>Bootstrap starter template</h1>
+      <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
+
   <div id="createList">
     <input type="text" id="new-list" placeholder="New list" />
   </div>
+
+<div class="tabbable tabs-left">
+  <ul class="nav nav-tabs">
+    {{> lists}}
+  </ul>
+  <div class="tab-content">
+    {{> lines}}
+  </div>
+</div>
+
+    </div> <!-- /container -->
+
+<div id="about" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Modal header</h3>
+  </div>
+  <div class="modal-body">
+    <p>One fine body…</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary">Save changes</button>
+  </div>
+</div>
+</template>
+
+<template name="groups">
+    <ul class="nav">
+	{{#each groups}}
+		{{> group}}
+	{{/each}}
+    </ul>
+</template>
+
+<template name="group">
+   	<li class="{{#if active}}active{{/if}}"><a href="/{{id}}">{{name}}</a></li>
+</template>
+
+<template name="lists">
+    {{#each lists}}
+
+  <li class="{{#if selected}}active{{/if}}">
+    <a href="{{_id}}">{{name}}</a>
+  </li>
+  {{/each}}
 </template>
 
 <template name="lines">
   {{#if any_list_selected}}
   <div id="items-view">
-    <table id="lines-table">
+    <table id="lines-table" class="table table-striped">
       <thead>
       <tr>
     	<td class="left top-left">&nbsp;</td>

@@ -16,6 +16,18 @@ Meteor.startup(function() {
 		return true;
 	};
 	
+	Groups.allow({
+		insert : isAnyone,
+		update : isOwner,
+		remove : isOwner,
+	});
+
+	Memberships.allow({
+		insert : isAnyone,
+		update : isAnyone,
+		remove : isAnyone,
+	});
+
 	Selections.allow({
 		insert : isAnyone,
 		update : isOwner,

@@ -1,6 +1,8 @@
 // Client-side JavaScript, bundled and sent to client.
 
 // Define Minimongo collections to match server/publish.js.
+Groups = new Meteor.Collection("groups");
+Memberships = new Meteor.Collection("memberships");
 Coffees = new Meteor.Collection("coffees");
 Lists = new Meteor.Collection("lists");
 Selections = new Meteor.Collection("selections");
@@ -21,17 +23,18 @@ Session.set('editing_listname', null);
 // When editing todo text, ID of the todo
 Session.set('editing_linename', null);
 
-// Subscribe to 'lists' collection on startup.
-// Select a list once data has arrived.
-Meteor.subscribe('lists', function() {
-	if (!Session.get('list_id')) {
-		var list = Lists.findOne({}, {
+Meteor.subscribe('memberships', function() {
+});
+
+Meteor.subscribe('groups', function() {
+	if (!Session.get('group_id')) {
+		var group = Groups.findOne({}, {
 			sort : {
-				timestamp : 1
+				name : 1
 			}
 		});
-		if (list)
-			Router.setList(list._id);
+		if (group)
+			Router.setGroup(group.id);
 	}
 });
 
@@ -46,6 +49,24 @@ Meteor.subscribe('coffees', function() {
 });
 
 // Always be subscribed to the todos for the selected list.
+Meteor.autosubscribe(function() {
+	var group_id = Session.get('group_id');
+	if (group_id) {
+		Meteor.subscribe('lists', group_id, function() {
+			var list_id = Session.get('list_id');
+			if(!list_id) {
+				var list = Lists.findOne({}, {
+					sort : {
+						timestamp : 1
+					}
+				});
+				if (list)
+					Router.setGroupList(group_id, list._id);
+			}
+		});
+	}
+});
+
 Meteor.autosubscribe(function() {
 	var list_id = Session.get('list_id');
 	if (list_id) {
@@ -90,6 +111,18 @@ var activateInput = function(input) {
 	input.select();
 };
 
+Template.groups.groups = function() {
+	return Groups.find({}, {
+		sort : {
+			name : 1
+		}
+	});
+};
+
+Template.group.active = function() {
+	return this.id == Session.get('group_id');
+};
+
 // //////// Lists //////////
 
 Template.lists.lists = function() {
@@ -119,13 +152,17 @@ Template.lists.events({
 });
 
 // Attach events to keydown, keyup, and blur on "New list" input box.
-Template.lists.events(okCancelEvents('#new-list', {
+Template.body.events(okCancelEvents('#new-list', {
 	ok : function(text, evt) {
-		var id = Lists.insert({
-			name : text,
-			timestamp: (new Date()).getTime(),
-		});
-		Router.setList(id);
+		var groupId = Session.get('group_id');
+		if(groupId) {
+			var id = Lists.insert({
+				group_id: groupId,
+				name : text,
+				timestamp: (new Date()).getTime(),
+			});
+			Router.setGroupList(groupId, id);
+		}
 		evt.target.value = "";
 	}
 }));
@@ -469,28 +506,6 @@ Template.coffees.coffees = function() {
 };
 
 Template.coffees.events({});
-
-// //////// Tracking selected list in URL //////////
-
-var NespressoRouter = Backbone.Router.extend({
-	routes : {
-		":list_id" : "main"
-	},
-	main : function(list_id) {
-		Session.set("list_id", list_id);
-	},
-	setList : function(list_id) {
-		this.navigate(list_id, true);
-	},
-});
-
-Router = new NespressoRouter;
-
-Meteor.startup(function() {
-	Backbone.history.start({
-		pushState : true
-	});
-});
 
 var updateCoffees = function() {
 	fetchAndDiffCoffees({
