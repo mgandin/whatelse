@@ -24,22 +24,23 @@
 
     <div class="container">
 
-	{{#each group}}
-	{{> groupDetail}}
-	{{/each}}
+		{{#each group}}
+		{{> groupDetail}}
+		{{/each}}
 
-  <div id="createList">
-    <input type="text" id="new-list" placeholder="New list" />
-  </div>
-
-<div class="tabbable tabs-left">
-  <ul class="nav nav-tabs">
-    {{> lists}}
-  </ul>
-  <div class="tab-content">
-    {{> lines}}
-  </div>
-</div>
+		  <div id="createList">
+		    <input type="text" id="new-list" placeholder="New list" />
+		  </div>
+		
+		<div class="tabbable tabs-left">
+		  <ul class="nav nav-tabs">
+		    {{> lists}}
+		  </ul>
+		  <div class="tab-content">
+		    {{> listActions}}
+		    {{> lines}}
+		  </div>
+		</div>
 
     </div> <!-- /container -->
 
@@ -56,6 +57,13 @@
     <button class="btn btn-primary">Save changes</button>
   </div>
 </div>
+</template>
+
+<template name="listActions">
+	<p>
+	    <button class="close-list btn btn-success {{#if cannotClose}}disabled{{/if}}">Close command</button>
+	    <button class="bepayer-list btn btn-info {{#if cannotBePayer}}disabled{{/if}}">I do the payment</button>
+	</p>
 </template>
 
 <template name="groupDetail">

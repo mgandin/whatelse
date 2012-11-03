@@ -119,6 +119,33 @@ Template.groupDetail.ownerName = function() {
 	return userLabel(this.owner_id);
 };
 
+var canClose = function() {
+	var list = Lists.findOne({_id: Session.get('list_id')});
+	var uid = Meteor.user() && Meteor.user()._id;
+	return list && list.payer_id && uid && uid == list.payer_id && !list.closed;
+}
+
+Template.listActions.cannotClose = function() {
+	return !canClose();
+};
+
+Template.listActions.cannotBePayer = function() {
+	var list = Lists.findOne({_id: Session.get('list_id')});
+	return list && list.payer_id;
+};
+
+Template.listActions.events({
+	'click .bepayer-list' : function(evt) {
+		var uid = Meteor.user()._id;
+		Lists.update({_id: Session.get('list_id')}, {$set: {payer_id: uid}});
+	},
+	'click .close-list' : function(evt) {
+		if(canClose()) {
+			Lists.update({_id: Session.get('list_id')}, {$set: {closed: true}});
+		}
+	},
+});
+
 Template.groups.groups = function() {
 	return Groups.find({}, {
 		sort : {
