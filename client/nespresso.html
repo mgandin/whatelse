@@ -61,8 +61,8 @@
 
 <template name="listActions">
 	<p>
-	    <button class="close-list btn btn-success {{#if cannotClose}}disabled{{/if}}">Close command</button>
 	    <button class="bepayer-list btn btn-info {{#if cannotBePayer}}disabled{{/if}}">I do the payment</button>
+	    <button class="close-list btn btn-success {{#if cannotClose}}disabled{{/if}}">Close command</button>
 	</p>
 </template>
 
@@ -88,11 +88,14 @@
 
 <template name="lists">
     {{#each lists}}
-
-  <li class="{{#if selected}}active{{/if}}">
-    <a href="{{_id}}">{{name}}</a>
-  </li>
+		{{> list}}
   {{/each}}
+</template>
+
+<template name="list">
+	<li class="{{#if selected}}active{{/if}}">
+		<a href="{{_id}}">{{name}} <span class="label label-{{status_labelid}}">{{status_labelname}}</span></a>
+	</li>
 </template>
 
 <template name="lines">

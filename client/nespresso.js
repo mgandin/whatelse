@@ -160,6 +160,14 @@ Template.group.active = function() {
 
 // //////// Lists //////////
 
+Template.list.status_labelid = function() {
+	return this.closed ? "important" : "info";
+};
+
+Template.list.status_labelname = function() {
+	return this.closed ? "closed" : "opened";
+};
+
 Template.lists.lists = function() {
 	return Lists.find({}, {
 		sort : {
@@ -216,7 +224,7 @@ Template.lists.events(okCancelEvents('#list-name-input', {
 	}
 }));
 
-Template.lists.selected = function() {
+Template.list.selected = function() {
 	return Session.equals('list_id', this._id) ? 'selected' : '';
 };
 
