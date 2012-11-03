@@ -24,8 +24,9 @@
 
     <div class="container">
 
-      <h1>Bootstrap starter template</h1>
-      <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
+	{{#each group}}
+	{{> groupDetail}}
+	{{/each}}
 
   <div id="createList">
     <input type="text" id="new-list" placeholder="New list" />
@@ -55,6 +56,14 @@
     <button class="btn btn-primary">Save changes</button>
   </div>
 </div>
+</template>
+
+<template name="groupDetail">
+	<h1>{{name}}</h1>
+	<div class="well">
+		<p>Created by: {{ownerName}}</p>
+		<p>Shipping address: {{shipping_address}}</p>
+	</div>
 </template>
 
 <template name="groups">

@@ -111,6 +111,14 @@ var activateInput = function(input) {
 	input.select();
 };
 
+Template.body.group = function() {
+	return Groups.find({id: Session.get('group_id')});
+};
+
+Template.groupDetail.ownerName = function() {
+	return userLabel(this.owner_id);
+};
+
 Template.groups.groups = function() {
 	return Groups.find({}, {
 		sort : {
@@ -425,15 +433,19 @@ Template.line_item.total = function() {
 };
 
 Template.line_item.owner = function() {
+	return userLabel(this.owner_id);
+};
+
+var userLabel = function(user_id) {
 	var user = Meteor.users.findOne({
-		_id : this.owner_id
+		_id : user_id
 	});
-	var label = this.owner_id;
+	var label = user_id;
 	if (user && user.emails) {
 		label = user.emails[0].address;
 	}
 	return label;
-};
+}
 
 Template.line_item.tag_objs = function() {
 	var line_id = this._id;
