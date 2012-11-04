@@ -256,6 +256,10 @@ Template.lines.events(okCancelEvents('#new-line', {
 	}
 }));
 
+Template.lines.rendered = function() {
+	$('#lines-table').rotateTableCellContent();
+}
+
 var participantsIds = function() {
 
 	var list_id = Session.get('list_id');
@@ -521,7 +525,7 @@ Template.table_cell.coffee = function() {
 };
 
 Template.table_cell.events({
-	'click .more-active' : function() {
+	'click .quantity' : function() {
 		var selection = this;
 		console.log('More');
 		console.log(selection);
@@ -532,15 +536,6 @@ Template.table_cell.events({
 			selection.quantity = 1;
 			var selectionId = Selections.insert(selection);
 			console.log("Inserted selection " + selectionId);
-		}
-	},
-	'click .less-active' : function() {
-		var selection = this;
-		console.log('Less');
-		console.log(selection);
-		if(selection._id) {
-			console.log("Updating selection");
-			Selections.update(selection._id, {$inc: {quantity: -1}});
 		}
 	},
 });

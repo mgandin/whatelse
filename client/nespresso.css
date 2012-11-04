@@ -2,21 +2,14 @@ body {
     padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
 
-#lines-table thead tr {
-	height: 30px;
-}
-
-#lines-table thead td {
-	text-align: center;
-}
-
-#lines-table td.left, #lines-table td.right {
-	padding-left: 20px;
-}
-
 #lines-table td {
-	width: 80px;
-	padding: 0px;
+	text-align: center;
+	white-space: nowrap;
+}
+
+#lines-table tr.coffee-names th {
+	padding-left:15px;
+	white-space: nowrap;
 }
 
 #lines-table td:hover {
@@ -24,48 +17,16 @@ body {
 }
 
 #lines-table tbody tr {
-	height: 80px;
+//	height: 80px;
 }
 
 #lines-table td.left {
-	width: 200px;
+	text-align: left;
 }
 
-.more-active {
-    background-color: #FF7F7F;
-    
-}
-
-.less-active {
-    background-color: #D47FFF;
-}
-
-.amount, .more-less {
-    height: 80px;
-    width: 40px;
-    display:inline-block;
-    float: left;
-}
-
-.amount {
+.quantity {
 	text-align: center;
-}
-
-.amount span {
-	padding-top: 40px;
-}
-
-.more-active, .less-active {
     cursor: pointer;
-}
-
-.more, .less {
-    height: 40px;
-    width: 40px;
-    display:block;
-    text-align: center;
-    padding-top: 40;
-	font-size: 1.5em;
 }
 
 #login-buttons {

@@ -62,7 +62,7 @@
 <template name="listActions">
 	<p>
 	    <button class="bepayer-list btn btn-info {{#if cannotBePayer}}disabled{{/if}}">I do the payment</button>
-	    <button class="close-list btn btn-success {{#if cannotClose}}disabled{{/if}}">Close command</button>
+	    <button class="close-list btn btn-success {{#if cannotClose}}disabled{{/if}}">Close participations</button>
 	</p>
 </template>
 
@@ -103,15 +103,19 @@
   <div id="items-view">
     <table id="lines-table" class="table table-striped">
       <thead>
-      <tr>
-    	<td class="left top-left">&nbsp;</td>
+      <tr class="coffee-names">
+    	<th class="left top-left">&nbsp;</th>
 	  {{#each coffees}}
-	    <td>
-	      <div class="name">{{name}}</div>
-	      <div>{{price}} &euro;/cap</div>
-	    </td>
+	    <th class="vertical">{{name}}</th>
 	  {{/each}}
-    	<td class="right top-right">Total</td>
+    	<th class="right top-right">Total</th>
+	  </tr>
+      <tr class="coffee-prices">
+    	<th class="left">&nbsp;</th>
+	  {{#each coffees}}
+	    <th>{{price}}&euro;</th>
+	  {{/each}}
+    	<th class="right">&nbsp;</th>
 	  </tr>
 	  </thead>
 
@@ -161,13 +165,7 @@
 </template>
 
 <template name="table_cell">
-  <div class="quantity">
-  	<div class="amount"><span>{{quantity}}</span></div>
-  	<div class="more-less">
-      <div class="more {{#if owner}}more-active{{/if}}">+</div>
-      <div class="less {{#if owner}}less-active{{/if}}">-</div>
-    </div>
-  </div>
+	<span class="badge quantity">{{quantity}}</span>
 </template>
 
 <template name="coffees">
