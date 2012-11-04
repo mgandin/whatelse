@@ -22,11 +22,11 @@
       </div>
     </div>
 
-{{#if currentUser}}
 
-	<h1>{{name}}</h1>
     <div class="container">
 
+{{#if currentUser}}
+	<h1>{{name}}</h1>
 
 <div class="row">
   <div class="span4">
@@ -53,9 +53,11 @@
 		  </div>
 		</div>
 
-    </div> <!-- /container -->
-
+{{else}}
+   {{> loginButtonsServicesRow}}
 {{/if}}
+
+    </div> <!-- /container -->
 </template>
 
 <template name="listActions">
