@@ -121,17 +121,17 @@
       <thead>
       <tr class="coffee-names">
     	<th class="left top-left">&nbsp;</th>
+    	<th class="right top-right">&nbsp;</th>
 	  {{#each coffees}}
 	    <th class="vertical">{{name}}</th>
 	  {{/each}}
-    	<th class="right top-right">Total</th>
 	  </tr>
       <tr class="coffee-prices">
     	<th class="left">&nbsp;</th>
+    	<th>Total</th>
 	  {{#each coffees}}
 	    <th><p><img src="/coffees/{{id}}_m.png"/></p><p>{{price}}&euro;</p></th>
 	  {{/each}}
-    	<th class="right">&nbsp;</th>
 	  </tr>
 	  </thead>
 
@@ -171,15 +171,15 @@
       {{/if}}
   	</td>
 
+  	<td class="right">
+      <div class="line-total">{{total}} &euro;</div>
+  	</td>
+
   {{#each selections}}
     <td>
       {{> table_cell}}
     </td>
   {{/each}}
-
-  	<td class="right">
-      <div class="line-total">{{total}} &euro;</div>
-  	</td>
   </tr>
 </template>
 
