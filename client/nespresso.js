@@ -529,17 +529,20 @@ Template.table_cell.coffee = function() {
 };
 
 Template.table_cell.events({
-	'click .quantity' : function() {
+	'click .quantity' : function(event) {
 		var selection = this;
-		console.log('More');
-		console.log(selection);
-		if(selection._id) {
-			console.log("Updating selection");
-			Selections.update(selection._id, {$inc: {quantity: 1}});
-		} else {
-			selection.quantity = 1;
-			var selectionId = Selections.insert(selection);
-			console.log("Inserted selection " + selectionId);
+		var inverse = event.ctrlKey;
+		var qtyVar = inverse ? -1 : 1;
+		var qty = selection.quantity + qtyVar;
+		if(qty >= 0) {
+			if(selection._id) {
+				console.log("Updating selection");
+				Selections.update(selection._id, {$inc: {quantity: qtyVar}});
+			} else {
+				selection.quantity = 1;
+				var selectionId = Selections.insert(selection);
+				console.log("Inserted selection " + selectionId);
+			}
 		}
 	},
 });
