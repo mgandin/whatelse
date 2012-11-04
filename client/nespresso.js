@@ -383,6 +383,19 @@ Template.lines.shipping_fees = function() {
 	return fees;
 };
 
+Template.line_item.isPayer = function() {
+	var line = this;
+	var list_id = line.list_id;
+	var owner_id = line.owner_id;
+	var list = Lists.findOne({_id: list_id});
+	if(list) {
+		var payer_id = list.payer_id;
+		return owner_id == payer_id;
+	} else {
+		return false;
+	}
+}
+
 Template.line_item.selections = function() {
 
 	var line = this;

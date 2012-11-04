@@ -149,7 +149,10 @@
 <template name="line_item">
   <tr class="line">
   	<td class="left">
-      <div class="owner">{{owner}}</div>
+      <span class="owner">{{owner}}</span>
+      {{#if isPayer}}
+      <span class="badge badge-info">CB</span>
+      {{/if}}
   	</td>
 
   {{#each selections}}
