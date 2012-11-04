@@ -165,7 +165,7 @@
 </template>
 
 <template name="table_cell">
-	<span class="badge quantity">{{quantity}}</span>
+	<span class="badge {{#if highlight}}badge-success{{/if}} quantity">{{quantity}}</span>
 </template>
 
 <template name="coffees">

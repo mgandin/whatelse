@@ -519,6 +519,10 @@ Template.table_cell.owner = function() {
 	return this.owner_id == Meteor.user()._id;
 };
 
+Template.table_cell.highlight = function() {
+	return this.quantity > 0;
+};
+
 Template.table_cell.coffee = function() {
 	var coffee = Coffees.findOne({id: this.coffee_id});
 	return coffee && coffee.id || "";
