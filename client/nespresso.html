@@ -141,24 +141,28 @@
       {{/each}}
       </tbody>
 
-      <tfoot>
-      <tr>
-    	<td class="left bottom-left">
-    		<div>Caps: {{total_caps}} caps</div>
-    		<div>Shipping fees: {{shipping_fees}} &euro;</div>
-    		<div>Total price: {{total_price}} &euro;</div>
-    	</td>
-	  {{#each coffees}}
-	    <td>
-	      <div>&nbsp;</div>
-	    </td>
-	  {{/each}}
-    	<td class="right bottom-right">&nbsp;</td>
-	  </tr>
-	  </tfoot>
-
     </table>
+
   </div>
+
+	<div>
+		<h3>Totals</h3>
+		<table class="table table-striped">
+			<tr>
+				<td>Capsules</td>
+				<td>{{total_caps}} caps</td>
+			</tr>
+			<tr>
+				<td>Shipping fees</td>
+				<td>{{shipping_fees}} &euro;</td>
+			</tr>
+			<tr>
+				<td>Total price</td>
+				<td><span class="label label-important total-price">{{total_price}} &euro;</span></td>
+			</tr>
+		</table>
+	</div>
+
   {{/if}}
 </template>
 

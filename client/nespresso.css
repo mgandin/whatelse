@@ -36,3 +36,8 @@ body {
 	margin-left: -20px;
 	text-shadow: 0 1px 0 white;
 }
+
+#items-view {
+	width: 100%;
+	overflow: auto;
+}
