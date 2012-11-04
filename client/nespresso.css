@@ -12,6 +12,10 @@ body {
 	white-space: nowrap;
 }
 
+#lines-table tr.coffee-prices th {
+	text-align: center;
+}
+
 #lines-table td:hover {
 	background-color: #27A1C5;
 }
