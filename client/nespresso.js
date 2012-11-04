@@ -210,6 +210,18 @@ Template.body.events(okCancelEvents('#new-list', {
 	}
 }));
 
+Template.body.events(okCancelEvents('#invite', {
+	ok : function(email, evt) {
+		var groupId = Session.get('group_id');
+		if(groupId) {
+			Meteor.call('invite', groupId, email, function(error, result) {
+				console.log("Invitation email sent");
+			});
+			evt.target.value = "";
+		}
+	}
+}));
+
 Template.lists.events(okCancelEvents('#list-name-input', {
 	ok : function(value) {
 		Lists.update(this._id, {
@@ -492,10 +504,15 @@ var userLabel = function(user_id) {
 	var user = Meteor.users.findOne({
 		_id : user_id
 	});
-	var label = user_id;
-	if (user && user.emails) {
-		label = user.emails[0].address;
+	var label;
+	if (user) {
+		if(user.username) {
+			label = user.username;
+		} else if(user.emails) {
+			label = user.emails[0].address;
+		}
 	}
+	label = label || user_id; 
 	return label;
 }
 
