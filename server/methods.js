@@ -27,8 +27,8 @@ Meteor.methods({
 		if (group && userId) {
 			console.log("Joining " + userId + " to " + group.id);
 			Memberships.insert({group_id: group.id, user_id: userId});
-			return "ok";
+			return group.id;
 		}
-		return "error";
+		return null;
 	},
 });
