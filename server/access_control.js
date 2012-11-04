@@ -15,7 +15,13 @@ Meteor.startup(function() {
 	var isAnyone = function() {
 		return true;
 	};
-	
+
+	var isListOpened = function(userId, lines) {
+		var listIds = _.keys(_.groupBy(lines, function(s) {return s.list_id}));
+		var lists = Lists.find({_id: {$in: listIds}}).fetch()
+		return _.all(lists, function(l) {return !l.closed});
+	};
+
 	Groups.allow({
 		insert : isAnyone,
 		update : isOwner,
@@ -29,9 +35,9 @@ Meteor.startup(function() {
 	});
 
 	Selections.allow({
-		insert : isAnyone,
-		update : isOwner,
-		remove : isOwner,
+		insert : _.and(isAnyone, isListOpened),
+		update : _.and(isOwner, isListOpened),
+		remove : _.and(isOwner, isListOpened),
 	});
 
 	Lists.allow({
