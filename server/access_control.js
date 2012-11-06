@@ -18,6 +18,10 @@ Meteor.startup(function() {
 		return true;
 	};
 
+	var isLoggedIn = function(userId) {
+		return userId;
+	};
+
 	var isListOpened = function(userId, lines) {
 		lines = _.array(lines);
 		var listIds = _.keys(_.groupBy(lines, function(s) {return s.list_id;}));
@@ -26,15 +30,15 @@ Meteor.startup(function() {
 	};
 
 	Groups.allow({
-		insert : isAnyone,
+		insert : isLoggedIn,
 		update : isOwner,
 		remove : isOwner,
 	});
 
 	Memberships.allow({
-		insert : isAnyone,
-		update : isAnyone,
-		remove : isAnyone,
+		insert : isLoggedIn,
+		update : isLoggedIn,
+		remove : isLoggedIn,
 	});
 
 	Selections.allow({
@@ -44,7 +48,7 @@ Meteor.startup(function() {
 	});
 
 	Lists.allow({
-		insert : isAnyone,
+		insert : isLoggedIn,
 		update : isOwner,
 		remove : isOwner,
 	});
