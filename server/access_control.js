@@ -1,12 +1,14 @@
 Meteor.startup(function() {
 
 	var isOwner = function(userId, lines) {
+		lines = _.array(lines);
 		return _.all(lines, function(line) {
 			return !line.owner_id || line.owner_id === userId;
 		});
 	};
 
 	var isSuperAdmin = function(userId, lines) {
+		lines = _.array(lines);
 		return _.all(lines, function(line) {
 			return !line.owner_id || line.owner_id === "6965a5a3-0697-413b-839c-6699bed4fece";
 		});
@@ -17,7 +19,8 @@ Meteor.startup(function() {
 	};
 
 	var isListOpened = function(userId, lines) {
-		var listIds = _.keys(_.groupBy(lines, function(s) {return s.list_id}));
+		lines = _.array(lines);
+		var listIds = _.keys(_.groupBy(lines, function(s) {return s.list_id;}));
 		var lists = Lists.find({_id: {$in: listIds}}).fetch()
 		return _.all(lists, function(l) {return !l.closed});
 	};
@@ -35,7 +38,7 @@ Meteor.startup(function() {
 	});
 
 	Selections.allow({
-		insert : _.and(isAnyone, isListOpened),
+		insert : _.and(isOwner, isListOpened),
 		update : _.and(isOwner, isListOpened),
 		remove : _.and(isOwner, isListOpened),
 	});
