@@ -1,21 +1,25 @@
 Groups = new Meteor.Collection("groups");
 
 Meteor.publish('groups', function() {
-	var groupIds = _.pluck(Memberships.find({
-		user_id: this.userId()
-	}).fetch(), 'group_id')
-	return Groups.find({
-		id: {
-			$in: groupIds
-		}
-	});
+	if(superAdminId == this.userId) {
+		return Groups.find()
+	} else {
+		var groupIds = _.pluck(Memberships.find({
+			user_id: this.userId
+		}).fetch(), 'group_id')
+		return Groups.find({
+			id: {
+				$in: groupIds
+			}
+		});
+	}
 });
 
 Memberships = new Meteor.Collection("memberships");
 
 Meteor.publish('memberships', function() {
 	return Memberships.find({
-		user_id: this.userId()
+		user_id: this.userId
 	});
 });
 
@@ -45,7 +49,17 @@ Meteor.publish('selections', function(list_id) {
 	});
 });
 
-Meteor.publish("allUserData", function() {
-	return Meteor.users.find({}, {
+Meteor.publish("allUserData", function (group_id) {
+	var userIds = _.pluck(Memberships.find({
+		group_id: group_id
+	}).fetch(), 'user_id')
+	console.log("Publishing users of group " + group_id + ": " + userIds);
+
+	return Meteor.users.find({
+		_id: {
+			$in: userIds
+		}
+	}, {
+		fields: {'username': 1}
 	});
 });

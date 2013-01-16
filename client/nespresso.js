@@ -8,7 +8,7 @@ Lists = new Meteor.Collection("lists");
 Selections = new Meteor.Collection("selections");
 
 // shipping fees
-var shippingFees = new BigDecimal("5");
+var shippingFees = new BigDecimal("4.42");
 var freeShippingFeesThreshold = 200;
 
 // ID of currently selected list
@@ -48,6 +48,15 @@ Meteor.subscribe('coffees', function() {
 	}
 });
 
+Meteor.autosubscribe(function() {
+	var group_id = Session.get('group_id');
+	console.log("Subscribing to users of group " + group_id);
+	if (group_id) {
+		Meteor.subscribe('allUserData', group_id, function() {
+		});
+	}
+});
+
 // Always be subscribed to the todos for the selected list.
 Meteor.autosubscribe(function() {
 	var group_id = Session.get('group_id');
@@ -64,6 +73,7 @@ Meteor.autosubscribe(function() {
 					Router.setGroupList(group_id, list._id);
 			}
 		});
+
 	}
 });
 

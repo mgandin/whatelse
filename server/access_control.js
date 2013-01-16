@@ -1,3 +1,5 @@
+var superAdminId = "80629187-3d49-407b-bf64-e6acb7a7a98c";
+
 Meteor.startup(function() {
 
 	var isOwner = function(userId, lines) {
@@ -10,7 +12,7 @@ Meteor.startup(function() {
 	var isSuperAdmin = function(userId, lines) {
 		lines = _.array(lines);
 		return _.all(lines, function(line) {
-			return !line.owner_id || line.owner_id === "6965a5a3-0697-413b-839c-6699bed4fece";
+			return !line.owner_id || line.owner_id === superAdminId;
 		});
 	};
 

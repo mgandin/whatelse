@@ -15,7 +15,7 @@ Meteor.methods({
 			var url = Meteor.absoluteUrl('#?join/' + token);
 			Email.send({
 				to : email,
-				from : Meteor.accounts.emailTemplates.from,
+				from : Accounts.emailTemplates.from,
 				subject : "What else - Invitation to join group " + group.name,
 				text : url,
 			});
@@ -23,10 +23,12 @@ Meteor.methods({
 	},
 	join : function(token) {
 		var group = Groups.findOne({_id: token});
-		var userId = this.userId();
+		var userId = this.userId;
 		if (group && userId) {
-			console.log("Joining " + userId + " to " + group.id);
-			Memberships.insert({group_id: group.id, user_id: userId});
+			if(!Memberships.findOne({user_id: userId})) {
+				console.log("Joining " + userId + " to " + group.id);
+				Memberships.insert({group_id: group.id, user_id: userId});
+			}
 			return group.id;
 		}
 		return null;
