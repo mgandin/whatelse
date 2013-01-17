@@ -1,4 +1,4 @@
-var superAdminId = "80629187-3d49-407b-bf64-e6acb7a7a98c";
+var superAdminId = "76f78961-020d-49f5-a404-08e15b869b89";
 
 Meteor.startup(function() {
 
