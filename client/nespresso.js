@@ -582,6 +582,9 @@ Template.table_cell.events({
 			if(selection._id) {
 				console.log("Updating selection");
 				Selections.update(selection._id, {$inc: {quantity: qtyVar}});
+
+				// remove selection when quantity is 0
+				Selections.remove({_id: selection._id, quantity: {$lte: 0}})
 			} else {
 				selection.quantity = 1;
 				var selectionId = Selections.insert(selection);
