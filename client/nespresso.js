@@ -139,15 +139,19 @@ Template.listActions.cannotClose = function() {
 	return !canClose();
 };
 
-Template.listActions.cannotBePayer = function() {
+var cannotBePayer = function() {
 	var list = Lists.findOne({_id: Session.get('list_id')});
 	return list && list.payer_id;
 };
 
+Template.listActions.cannotBePayer = cannotBePayer;
+
 Template.listActions.events({
 	'click .bepayer-list' : function(evt) {
-		var uid = Meteor.user()._id;
-		Lists.update({_id: Session.get('list_id')}, {$set: {payer_id: uid}});
+		if(!cannotBePayer()) {
+			var uid = Meteor.user()._id;
+			Lists.update({_id: Session.get('list_id')}, {$set: {payer_id: uid}});
+		}
 	},
 	'click .close-list' : function(evt) {
 		if(canClose()) {
